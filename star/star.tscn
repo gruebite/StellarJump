@@ -1,0 +1,111 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://star/star.gd" type="Script" id=1]
+[ext_resource path="res://scripts/state_machine.gd" type="Script" id=2]
+[ext_resource path="res://star/star_state.gd" type="Script" id=4]
+
+[sub_resource type="CircleShape2D" id=1]
+resource_local_to_scene = true
+
+[node name="Star" type="Node2D"]
+modulate = Color( 1.5, 1.5, 1.5, 1 )
+script = ExtResource( 1 )
+
+[node name="Area" type="Area2D" parent="."]
+
+[node name="Shape" type="CollisionShape2D" parent="Area"]
+shape = SubResource( 1 )
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource( 2 )
+
+[node name="ProtoRed" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 10.0
+target_core_radius = 30.0
+target_radius = 30.0
+target_color = Color( 0.6, 0, 0, 1 )
+override_color = true
+points = 500
+next_state_names = [ "BrownDwarf", "LowMass", "HighMass" ]
+next_state_weights = [ 2, 2, 1 ]
+
+[node name="ProtoGreen" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="ProtoBlue" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="ProtoPurple" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+
+[node name="BrownDwarf" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 5.0
+orbit_multiplier = 0.1
+target_core_radius = 20.0
+target_radius = 20.0
+target_color = Color( 0.2, 0.188, 0.16, 1 )
+points = 50
+
+[node name="LowMass" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 30.0
+target_core_radius = 60.0
+target_radius = 60.0
+target_color = Color( 0.8, 0.773333, 0, 1 )
+points = 50
+next_state_names = [ "Giant" ]
+next_state_weights = [ 1 ]
+
+[node name="HighMass" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 20.0
+orbit_multiplier = 2.0
+target_core_radius = 80.0
+target_radius = 80.0
+target_color = Color( 0, 0.929412, 1, 1 )
+points = 50
+next_state_names = [ "SuperGiant" ]
+next_state_weights = [ 1 ]
+
+[node name="Giant" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 60.0
+orbit_multiplier = 0.5
+target_core_radius = 20.0
+target_radius = 120.0
+target_color = Color( 1, 0.494118, 0, 1 )
+next_state_names = [ "WhiteDwarf" ]
+next_state_weights = [ 1 ]
+
+[node name="SuperGiant" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 40.0
+orbit_multiplier = 0.5
+target_radius = 180.0
+target_color = Color( 1, 0, 0, 1 )
+override_color = true
+next_state_names = [ "Neutron", "Blackhole" ]
+next_state_weights = [ 1, 1 ]
+
+[node name="WhiteDwarf" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 3.0
+orbit_multiplier = 3.0
+target_core_radius = 20.0
+target_radius = 20.0
+target_color = Color( 1, 1, 1, 1 )
+
+[node name="Neutron" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 0.5
+orbit_multiplier = 4.0
+target_radius = 30.0
+target_color = Color( 1, 1, 1, 1 )
+
+[node name="Blackhole" type="Node" parent="StateMachine"]
+script = ExtResource( 4 )
+lifetime = 0.5
+orbit_multiplier = 4.0
+target_radius = 30.0

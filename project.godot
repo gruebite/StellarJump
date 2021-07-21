@@ -24,16 +24,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://star/star.gd"
 }, {
-"base": "StateNode",
-"class": "StarState",
-"language": "GDScript",
-"path": "res://star/star_state.gd"
-}, {
-"base": "Node",
-"class": "StateMachine",
-"language": "GDScript",
-"path": "res://scripts/state_machine.gd"
-}, {
 "base": "Node",
 "class": "StateNode",
 "language": "GDScript",
@@ -43,8 +33,6 @@ _global_script_class_icons={
 "Game": "",
 "Player": "",
 "Star": "",
-"StarState": "",
-"StateMachine": "",
 "StateNode": ""
 }
 

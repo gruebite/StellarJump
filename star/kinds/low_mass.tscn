@@ -9,6 +9,7 @@ resource_local_to_scene = true
 lifetime = 20.0
 target_radius = 45.0
 orbital_rate = 0.5
+orbit_limit = 2.0
 points = 10
 ring_color = Color( 1, 1, 0, 1 )
 core_color = Color( 1, 0.796078, 0, 1 )

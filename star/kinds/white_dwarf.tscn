@@ -5,13 +5,12 @@
 [sub_resource type="CircleShape2D" id=1]
 resource_local_to_scene = true
 
-[node name="BrownDwarf" instance=ExtResource( 1 )]
-lifetime = 45.0
-orbital_rate = 0.25
+[node name="WhiteDwarf" instance=ExtResource( 1 )]
+lifetime = 50.0
+target_radius = 15.0
+orbital_rate = 0.33
 orbit_limit = 2.0
-points = 5
-ring_color = Color( 0.407843, 0.333333, 0.219608, 1 )
-core_color = Color( 0.286275, 0.235294, 0.196078, 1 )
+points = 100
 
 [node name="Shape" parent="Area" index="0"]
 shape = SubResource( 1 )

@@ -22,6 +22,8 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if orbiting:
 		if is_instance_valid(orbiting):
+			if orbiting.state == Star.State.COLLAPSING:
+				explode()
 			direction = direction.rotated(TAU * orbiting.orbital_rate * delta * speed_mult * (1 if clockwise else -1))
 			position = orbiting.position + direction * (orbiting.radius + radius*2)
 			rotation = direction.angle()
@@ -59,18 +61,26 @@ func _on_screen_exited():
 	print("DIED")
 	emit_signal("died")
 
+func explode() -> void:
+	$Sprite.hide()
+	$ExplosionParticles.emitting = true
+
 func action() -> void:
 	if orbiting:
 		if orbiting.state != Star.State.COLLAPSING:
 			emit_signal("consumed_star", orbiting)
-			orbiting.kill()
+			var star := orbiting
 			orbiting = null
+			star.explode()
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1
 		emit_signal("used_boost")
+		$BoostParticles.emitting = true
 
 func reset() -> void:
+	$Sprite.show()
+	orbiting = null
 	boosts = 5
 	speed_mult = 1.01
 	position = Vector2()

@@ -6,7 +6,9 @@
 [sub_resource type="CircleShape2D" id=1]
 radius = 8.0
 
-[node name="Player" type="Node2D"]
+[node name="Player" type="Node2D" groups=[
+"Player",
+]]
 modulate = Color( 1.5, 1.5, 1.5, 1 )
 script = ExtResource( 1 )
 
@@ -20,6 +22,31 @@ shape = SubResource( 1 )
 
 [node name="VisibilityNotifier2D" type="VisibilityNotifier2D" parent="."]
 rect = Rect2( -8, -5, 16, 10 )
+
+[node name="BoostParticles" type="CPUParticles2D" parent="."]
+position = Vector2( -12, 0 )
+emitting = false
+amount = 32
+lifetime = 0.5
+one_shot = true
+preprocess = 0.25
+local_coords = false
+spread = 180.0
+gravity = Vector2( 0, 0 )
+initial_velocity = 10.0
+initial_velocity_random = 1.0
+
+[node name="ExplosionParticles" type="CPUParticles2D" parent="."]
+position = Vector2( -12, 0 )
+emitting = false
+amount = 128
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.8
+local_coords = false
+spread = 180.0
+gravity = Vector2( 0, 0 )
+initial_velocity = 120.0
 
 [connection signal="area_entered" from="Area" to="." method="_on_area_entered"]
 [connection signal="screen_exited" from="VisibilityNotifier2D" to="." method="_on_screen_exited"]

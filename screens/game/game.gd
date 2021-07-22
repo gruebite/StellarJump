@@ -2,6 +2,10 @@ class_name Game extends Node2D
 
 var score := 0
 
+var _fake_score := 0
+var _collected_score := 0
+var _wait_score := 0.5
+
 func _ready() -> void:
 	randomize()
 	var _ignore: int
@@ -12,6 +16,21 @@ func _ready() -> void:
 	_ignore = $Stars.connect("star_collapsed", self, "_on_star_collapsed")
 	
 	reset()
+
+func _process(delta: float) -> void:
+	var sec := OS.get_ticks_msec() / 1000
+	$UI/HUD/Top/Time.text = "%02d:%02d" % [sec / 60, sec % 60]
+	
+	if _collected_score > 0:
+		$UI/HUD/Top/Collected.text = " +" + str(_collected_score)
+		if _wait_score > 0:
+			_wait_score -= delta
+		else:
+			_fake_score += 1
+			_collected_score -= 1
+			$UI/HUD/Top/Score.text = str(_fake_score)
+	else:
+		$UI/HUD/Top/Collected.text = ""
 
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
@@ -25,8 +44,10 @@ func _on_player_used_boost() -> void:
 	$UI/HUD/Top/Boosts.text = "|".repeat($Player.boosts)
 
 func _on_player_consumed_star(star: Star) -> void:
+	_fake_score = score
 	score += star.points
-	$UI/HUD/Top/Score.text = str(score)
+	_collected_score = star.points
+	_wait_score = 0.5
 
 func _on_star_collapsed(star: Star) -> void:
 	if $Player.orbiting == star:

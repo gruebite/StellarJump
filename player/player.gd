@@ -131,6 +131,7 @@ func action() -> void:
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1
+		dec_warp()
 		emit_signal("used_boost")
 		$BoostParticles.emitting = true
 

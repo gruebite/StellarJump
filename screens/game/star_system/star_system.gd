@@ -60,7 +60,7 @@ var endgame_constellations := [
 		}),
 	Constellation.new(self) \
 		.with_lifetime(1.0) \
-		.with_spawn_rate(0.9) \
+		.with_spawn_rate(1.0) \
 		.with_min_stars(1) \
 		.with_star_weights({
 			"White Dwarf": 5,
@@ -68,9 +68,9 @@ var endgame_constellations := [
 			"Black Hole": 1,
 		}),
 	Constellation.new(self) \
-		.with_lifetime(0.0) \
-		.with_spawn_rate(0.0) \
-		.with_min_stars(6) \
+		.with_lifetime(0.6) \
+		.with_spawn_rate(0.2) \
+		.with_min_stars(3) \
 		.with_star_weights({
 			"Pulsar": 1,
 		}),

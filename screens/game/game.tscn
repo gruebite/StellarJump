@@ -50,20 +50,13 @@ script = ExtResource( 4 )
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 4 )
 
-[node name="UI" type="Control" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
-rect_min_size = Vector2( 1280, 720 )
-mouse_filter = 2
-theme = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="UI" type="CanvasLayer" parent="."]
 
 [node name="HUD" type="MarginContainer" parent="UI"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -87,7 +80,7 @@ size_flags_vertical = 0
 custom_fonts/font = ExtResource( 6 )
 text = "|||||"
 
-[node name="Warp" type="Label" parent="UI/HUD/Top/Bar"]
+[node name="Chain" type="Label" parent="UI/HUD/Top/Bar"]
 margin_top = 34.0
 margin_right = 424.0
 margin_bottom = 64.0
@@ -137,6 +130,7 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
+theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -18,6 +18,8 @@ func _ready() -> void:
 	_ignore = $Player.connect("used_boost", self, "_on_player_used_boost")
 	_ignore = $Player.connect("gained_boost", self, "_on_player_gained_boost")
 	_ignore = $Player.connect("consumed_star", self, "_on_player_consumed_star")
+	_ignore = $Player.connect("chained_changed", self, "_on_player_chained_changed")
+	_ignore = $Player.connect("gained_points", self, "gain_points")
 	
 	_ignore = $Stars.connect("star_collapsed", self, "_on_star_collapsed")
 	
@@ -49,24 +51,32 @@ func _on_player_died() -> void:
 	$UI/GameOver/Grid/Score.text = "Score: " + str(score)
 	$UI/GameOver.show()
 
+func _on_player_chained_changed() -> void:
+	var extra: String
+	match $Player.get_chain_overflow():
+		0: extra = ""
+		1: extra = "-"
+		2: extra = "="
+	$UI/HUD/Top/Bar/Chain.text = "Ξ".repeat($Player.get_warp_level()) + extra
+
 func _on_player_used_boost() -> void:
 	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
-	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
 	
 func _on_player_gained_boost() -> void:
 	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
 
 func _on_player_consumed_star(star: Star) -> void:
-	_fake_score = score
-	var p := star.points
-	score += p
-	_collected_score = p
-	_wait_score = 0.5
-	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
+	gain_points(star.points)
 
 func _on_star_collapsed(star: Star) -> void:
-	if !star.consumed:
+	if !star.consumed and !star.instantly_consumable:
 		$Stars.form_star("Black Hole", star.position)
+	
+func gain_points(amount: int) -> void:
+	_fake_score = score
+	score += amount
+	_collected_score = amount
+	_wait_score = 0.5
 
 func get_game_seconds() -> int:
 	return int(OS.get_ticks_msec() / 1000.0) - _start_time
@@ -78,8 +88,8 @@ func reset() -> void:
 	$Player.reset()
 	$Stars.reset()
 	
-	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
-	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
+	_on_player_gained_boost()
+	_on_player_chained_changed()
 	$UI/HUD/Top/Score/Label.text = str(score)
 	
 	$UI/GameOver.hide()

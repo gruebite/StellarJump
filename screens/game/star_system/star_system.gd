@@ -10,29 +10,29 @@ var constellations := {
 var decks := [
 	ConstellationDeck.new([
 		Constellation.new(self) \
-		.with_lifetime(0.0) \
-		.with_spawn_rate(0.0) \
-		.with_min_stars(1) \
-		.with_spawn_func(funcref(self, "_spawn_start")) \
-		.with_star_weights({
-			"Brown Dwarf": 0,
-			"Low Mass": 1,
-			"High Mass": 0,
-			"Giant": 0,
-			"Super Giant": 0,
-			"White Dwarf": 0,
-			"Neutron": 0,
-			"Pulsar": 0,
-			"Black Hole": 0,
-		}),
+			.with_lifetime(0.0) \
+			.with_spawn_rate(0.0) \
+			.with_min_stars(1) \
+			.with_spawn_func(funcref(self, "_spawn_start")) \
+			.with_star_weights({
+				"Brown Dwarf": 0,
+				"Low Mass": 1,
+				"High Mass": 0,
+				"Giant": 0,
+				"Super Giant": 0,
+				"White Dwarf": 0,
+				"Neutron": 0,
+				"Pulsar": 0,
+				"Black Hole": 0,
+			}),
 		Constellation.new(self) \
 			.with_lifetime(30.0) \
-			.with_spawn_rate(3.0) \
-			.with_min_stars(3) \
+			.with_spawn_rate(0.0) \
+			.with_min_stars(4) \
 			.with_star_weights({
 				"Brown Dwarf": 1,
-				"Low Mass": 1,
-				"High Mass": 1,
+				"Low Mass": 6,
+				"High Mass": 3,
 			}),
 		Constellation.new(self) \
 			.with_lifetime(5.0) \
@@ -46,12 +46,12 @@ var decks := [
 	ConstellationDeck.new([
 		Constellation.new(self) \
 			.with_lifetime(30.0) \
-			.with_spawn_rate(3.0) \
-			.with_min_stars(3) \
+			.with_spawn_rate(0.0) \
+			.with_min_stars(4) \
 			.with_star_weights({
 				"Brown Dwarf": 1,
-				"Low Mass": 3,
-				"High Mass": 2,
+				"Low Mass": 6,
+				"High Mass": 3,
 			}),
 		Constellation.new(self) \
 			.with_lifetime(5.0) \

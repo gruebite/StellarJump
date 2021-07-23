@@ -5,12 +5,12 @@
 [sub_resource type="CircleShape2D" id=1]
 resource_local_to_scene = true
 
-[node name="Giant" instance=ExtResource( 1 )]
-target_radius = 120.0
-orbital_rate = 0.25
-orbit_limit = 0.5
-points = 5
-ring_color = Color( 1, 0, 0, 1 )
+[node name="SuperGiant" instance=ExtResource( 1 )]
+lifetime = 15.0
+target_radius = 80.0
+orbital_rate = 0.3
+points = 30
+ring_color = Color( 1.8, 0, 0, 1 )
 core_color = Color( 1, 0.25098, 0, 1 )
 
 [node name="Shape" parent="Area" index="0"]

@@ -6,11 +6,10 @@
 resource_local_to_scene = true
 
 [node name="WhiteDwarf" instance=ExtResource( 1 )]
-lifetime = 50.0
-target_radius = 15.0
-orbital_rate = 0.33
+lifetime = 80.0
+target_radius = 25.0
 orbit_limit = 2.0
-points = 100
+ring_color = Color( 1.4, 1.4, 1.4, 1 )
 
 [node name="Shape" parent="Area" index="0"]
 shape = SubResource( 1 )

@@ -6,10 +6,11 @@
 resource_local_to_scene = true
 
 [node name="Neutron" instance=ExtResource( 1 )]
-lifetime = 20.0
-target_radius = 15.0
-orbital_rate = 0.66
-points = 500
+lifetime = 15.0
+target_radius = 20.0
+orbital_rate = 0.8
+points = 100
+ring_color = Color( 1.4, 1.4, 1.4, 1 )
 core_color = Color( 0, 1, 1, 1 )
 
 [node name="Shape" parent="Area" index="0"]

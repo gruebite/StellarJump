@@ -7,19 +7,31 @@ enum State {
 	EXPLODING,
 }
 
+const orbital_rate_factor := 1.0
+const orbital_rate_lifetime_factor := 0.1
+const orbital_rate_radius_factor := 0.1
+const points_factor := 1.0
+const points_lifetime_factor := 0.01
+const points_radius_factor := 0.1
+
 signal formed()
 signal died()
 signal collapsed()
 
+export var instantly_consumable := false
 export var formtime := 1.0
-export var lifetime := 10.0
-export var target_radius := 30.0
-export var orbital_rate := 1.0
+export var lifetime := 20.0
+export var target_radius := 40.0
+export var orbital_rate := 0.5
 export var orbit_limit := 1.0
-export var points := 0
+export var points := 10
+export var boosts := 0
 
 export var ring_color := Color.white
 export var core_color := Color.white
+
+var consumed := false
+var orbited := false
 
 var state: int = State.FORMING
 
@@ -59,7 +71,8 @@ func _physics_process(delta: float) -> void:
 	
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, core_radius, core_color)
-	draw_arc(Vector2.ZERO, radius - 1.0, 0, 2 * PI, 32, ring_color, 2.0, true)
+	if radius >= 2.0:
+		draw_arc(Vector2.ZERO, radius, 0, 2 * PI, 32, ring_color, 3.0, true)
 	#draw_arc(Vector2.ZERO, radius, 0.0, 0.2, 32, Color.white, 2.0, true)
 	#draw_arc(Vector2.ZERO, radius, PI, PI + 0.2, 32, Color.white, 2.0, true)
 
@@ -72,25 +85,35 @@ func set_radius(value: float) -> void:
 
 func get_radius() -> float:
 	return radius
+	
+#func get_points() -> int:
+#	return int(points_factor / (lifetime * points_lifetime_factor + radius * points_radius_factor))
+
+#func get_oribtal_rate() -> float:
+#	return orbital_rate_factor / (lifetime * orbital_rate_lifetime_factor + radius * orbital_rate_radius_factor)
 
 func siphon() -> void:
+	pass
 	# Percentage of lifetime passed.
-	var p := clamp((age - formtime) / lifetime, 0.0, 0.999999999)
-	var speed_mult: float = get_tree().get_nodes_in_group("Player")[0].speed_mult
-	var desired_remaining := min(lifetime - (age - formtime), 1.0 / orbital_rate * orbit_limit * speed_mult)
-	lifetime = (1 / (1-p)) * desired_remaining
-	age = formtime + p * lifetime
+	#var p := clamp((age - formtime) / lifetime, 0.0, 0.999999999)
+	#var speed_mult: float = get_tree().get_nodes_in_group("Player")[0].speed_mult
+	#var desired_remaining := min(lifetime - (age - formtime), 1.0 / orbital_rate * orbit_limit * speed_mult)
+	#lifetime = (1 / (1-p)) * desired_remaining
+	#age = formtime + p * lifetime
 
 func kill() -> void:
 	age = max(age, formtime + lifetime)
 	state = State.COLLAPSING
 	emit_signal("died")
 
-func explode() -> void:
+func consume() -> void:
+	consumed = true
 	kill()
 	emit_signal("collapsed")
 	self.radius = 0
 	self.core_radius = 0
-	$ExplosionParticles.emission_sphere_radius = target_radius
-	$ExplosionParticles.emitting = true
-	$ExplosionTimer.start()
+	state = State.EXPLODING
+	if !orbited:
+		$ExplosionParticles.emission_sphere_radius = target_radius
+		$ExplosionParticles.emitting = true
+		$ExplosionTimer.start()

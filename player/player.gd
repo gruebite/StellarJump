@@ -2,12 +2,13 @@ class_name Player extends Node2D
 
 signal died()
 signal used_boost()
+signal gained_boost()
 signal consumed_star(star)
 
 const radius := 5
 const rotation_speed := PI
 
-var speed := 120.0
+var speed := 180.0
 var speed_mult = 1.01
 var direction := Vector2(1, 1).normalized()
 
@@ -15,6 +16,8 @@ var orbiting: Star = null
 var clockwise := true
 
 var boosts := 5
+
+var _orbit_traveled := 0.0
 
 func _ready() -> void:
 	$Area/Shape.shape.radius = radius
@@ -24,7 +27,11 @@ func _physics_process(delta: float) -> void:
 		if is_instance_valid(orbiting):
 			if orbiting.state == Star.State.COLLAPSING:
 				explode()
-			direction = direction.rotated(TAU * orbiting.orbital_rate * delta * speed_mult * (1 if clockwise else -1))
+			var rads: float = TAU * orbiting.orbital_rate * delta * speed_mult * (1 if clockwise else -1)
+			_orbit_traveled += abs(rads)
+			if _orbit_traveled >= TAU:
+				orbiting.orbited = true
+			direction = direction.rotated(rads)
 			position = orbiting.position + direction * (orbiting.radius + radius*2)
 			rotation = direction.angle()
 	else:
@@ -46,16 +53,23 @@ func _draw() -> void:
 	#draw_circle(satellite * satellite_distance, radius / 2.0, Color.white)
 
 func _on_area_entered(area: Area2D) -> void:
-	var node: Node2D = area.get_parent()
-	var new_direction := (position - node.position).normalized()
+	var star: Star = area.get_parent()
+	if star.instantly_consumable:
+		if !star.consumed:
+			star.consume()
+			boosts += star.boosts
+			emit_signal("gained_boost")
+		return
+	var new_direction := (position - star.position).normalized()
 	# Only set direction if we are not already in orbit.
 	if orbiting:
 		orbiting.kill()
 	else:
 		clockwise = direction.dot(new_direction.rotated(PI / 2)) >= 0
-	orbiting = node as Star
+	orbiting = star
 	orbiting.siphon()
 	direction = new_direction
+	_orbit_traveled = 0.0
 
 func _on_screen_exited():
 	print("DIED")
@@ -68,10 +82,10 @@ func explode() -> void:
 func action() -> void:
 	if orbiting:
 		if orbiting.state != Star.State.COLLAPSING:
-			emit_signal("consumed_star", orbiting)
 			var star := orbiting
 			orbiting = null
-			star.explode()
+			star.consume()
+			emit_signal("consumed_star", star)
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1

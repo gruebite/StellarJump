@@ -46,10 +46,14 @@ func _process(delta: float) -> void:
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed:
 		reset()
+	if event is InputEventKey and event.pressed and event.scancode == KEY_SPACE:
+		reset()
+	get_tree().set_input_as_handled()
 
 func _on_player_died() -> void:
 	$UI/GameOver/Grid/Score.text = "Score: " + str(score)
 	$UI/GameOver.show()
+	$UI/GameOver.grab_focus()
 
 func _on_player_chained_changed() -> void:
 	var extra: String
@@ -66,7 +70,7 @@ func _on_player_gained_boost() -> void:
 	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
 
 func _on_player_consumed_star(star: Star) -> void:
-	gain_points(star.points)
+	gain_points(star.points * $Player.get_warp_speed())
 
 func _on_star_collapsed(star: Star) -> void:
 	if !star.consumed and !star.instantly_consumable:

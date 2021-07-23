@@ -27,7 +27,7 @@ const warp_speeds := [
 
 const chained_per_warp := 3
 const max_boosts := 10
-const boost_points := 1000
+const boost_points := 100
 
 var chained := 0
 
@@ -46,7 +46,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if orbiting:
 		if is_instance_valid(orbiting):
-			var orb := 1 + (get_warp_speed() - 1) * 0.5
+			var orb := 1 + (get_warp_speed() - 1) * 0.25
 			var rads: float = TAU * orbiting.orbital_rate * delta * orb * (1 if clockwise else -1)
 			_orbit_traveled += abs(rads)
 			if _orbit_traveled >= TAU:
@@ -94,7 +94,7 @@ func _on_area_entered(area: Area2D) -> void:
 	if orbiting and is_instance_valid(orbiting):
 		inc_chain()
 		orbiting.consume()
-		$BoostParticles.emitting = true
+		$ConsumeParticles.emitting = true
 	else:
 		clockwise = direction.dot(new_direction.rotated(PI / 2)) >= 0
 	direction = new_direction
@@ -148,20 +148,19 @@ func action() -> void:
 			orbiting = null
 			star.consume()
 			if !star.orbited:
-				$BoostParticles.emitting = true
+				$ConsumeParticles.emitting = true
 				inc_chain()
 			emit_signal("consumed_star", star)
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1
-		inc_chain()
 		emit_signal("used_boost")
 		$BoostParticles.emitting = true
 
 func reset() -> void:
 	$Sprite.show()
 	orbiting = null
-	boosts = max_boosts
+	boosts = max_boosts / 2
 	chained = 0
 	position = Vector2()
 	direction = Vector2(1, 1).normalized()

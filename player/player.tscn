@@ -36,6 +36,21 @@ initial_velocity = 10.0
 initial_velocity_random = 1.0
 scale_amount = 2.0
 
+[node name="ConsumeParticles" type="CPUParticles2D" parent="."]
+modulate = Color( 1.5, 1.5, 1.5, 1 )
+position = Vector2( -12, 0 )
+emitting = false
+amount = 32
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.5
+lifetime_randomness = 1.0
+local_coords = false
+spread = 180.0
+gravity = Vector2( 0, 0 )
+initial_velocity = 60.0
+scale_amount = 2.0
+
 [node name="ExplosionParticles" type="CPUParticles2D" parent="."]
 modulate = Color( 1.5, 1.5, 1.5, 1 )
 position = Vector2( -12, 0 )
@@ -44,6 +59,7 @@ amount = 128
 lifetime = 0.5
 one_shot = true
 explosiveness = 0.8
+lifetime_randomness = 1.0
 local_coords = false
 spread = 180.0
 gravity = Vector2( 0, 0 )

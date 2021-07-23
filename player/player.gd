@@ -6,10 +6,24 @@ signal gained_boost()
 signal consumed_star(star)
 
 const radius := 5
+const speed := 120.0
 const rotation_speed := PI
 
-var speed := 180.0
-var speed_mult = 1.01
+const warp_speeds := [
+	1.0,
+	1.5, # 3
+	1.9, # 5
+	2.2, # 8
+	2.4, # 13
+	2.5, # 21
+]
+
+const max_unstable_level := 70.0
+
+var unstable_level := 0
+var warp_level := 0
+var chained := 0
+
 var direction := Vector2(1, 1).normalized()
 
 var orbiting: Star = null
@@ -27,7 +41,7 @@ func _physics_process(delta: float) -> void:
 		if is_instance_valid(orbiting):
 			if orbiting.state == Star.State.COLLAPSING:
 				explode()
-			var rads: float = TAU * orbiting.orbital_rate * delta * speed_mult * (1 if clockwise else -1)
+			var rads: float = TAU * orbiting.orbital_rate * delta * pow(1.01, unstable_level) * (1 if clockwise else -1)
 			_orbit_traveled += abs(rads)
 			if _orbit_traveled >= TAU:
 				orbiting.orbited = true
@@ -35,8 +49,8 @@ func _physics_process(delta: float) -> void:
 			position = orbiting.position + direction * (orbiting.radius + radius*2)
 			rotation = direction.angle()
 	else:
-		position += direction * delta * speed * speed_mult
-		rotation += delta * rotation_speed * speed_mult * (1 if clockwise else -1)
+		position += direction * delta * speed * warp_speeds[warp_level]
+		rotation += delta * rotation_speed * warp_speeds[warp_level] * (1 if clockwise else -1)
 	update()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -85,10 +99,19 @@ func action() -> void:
 			var star := orbiting
 			orbiting = null
 			star.consume()
+			if !star.orbited:
+				chained += 1
+				warp_level = int(clamp(int((chained - 2) / 5), 0, warp_speeds.size() - 1))
+			else:
+				chained = 0
+				warp_level = 0
+			print("WARP ", warp_level)
 			emit_signal("consumed_star", star)
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1
+		warp_level = int(max(0, warp_level - 1))
+		chained = 0 if warp_level == 0 else warp_level * 5 + 2
 		emit_signal("used_boost")
 		$BoostParticles.emitting = true
 
@@ -96,6 +119,8 @@ func reset() -> void:
 	$Sprite.show()
 	orbiting = null
 	boosts = 5
-	speed_mult = 1.01
+	unstable_level = 0
+	warp_level = 0
+	chained = 0
 	position = Vector2()
 	direction = Vector2(1, 1).normalized()

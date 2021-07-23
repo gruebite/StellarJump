@@ -22,7 +22,7 @@ var constellations := [
 			"Black Hole": 0,
 		}),
 	Constellation.new(self) \
-		.with_lifetime(60.0) \
+		.with_lifetime(30.0) \
 		.with_spawn_rate(2.0) \
 		.with_min_stars(3) \
 		.with_star_weights({
@@ -37,10 +37,43 @@ var constellations := [
 		.with_star_weights({
 			"Giant": 1,
 			"Super Giant": 1,
-		})
+		}),
 ]
 
-var shuffle_constellations := [
+var endgame_constellations := [
+	Constellation.new(self) \
+		.with_lifetime(30.0) \
+		.with_spawn_rate(2.0) \
+		.with_min_stars(3) \
+		.with_star_weights({
+			"Brown Dwarf": 1,
+			"Low Mass": 1,
+			"High Mass": 1,
+		}),
+	Constellation.new(self) \
+		.with_lifetime(10.0) \
+		.with_spawn_rate(0.5) \
+		.with_min_stars(6) \
+		.with_star_weights({
+			"Giant": 1,
+			"Super Giant": 1,
+		}),
+	Constellation.new(self) \
+		.with_lifetime(0.0) \
+		.with_spawn_rate(0.0) \
+		.with_min_stars(1) \
+		.with_star_weights({
+			"White Dwarf": 1,
+			"Neutron": 1,
+			"Black Hole": 1,
+		}),
+	Constellation.new(self) \
+		.with_lifetime(0.0) \
+		.with_spawn_rate(0.0) \
+		.with_min_stars(6) \
+		.with_star_weights({
+			"Pulsar": 1,
+		}),
 ]
 
 var _current_constellation := 0
@@ -50,7 +83,7 @@ var _polled_stars := []
 func _ready() -> void:
 	pass
 
-func _physics_process(delta: float) -> void:
+func _process(delta: float) -> void:
 	var con: Constellation
 	if _current_constellation < constellations.size():
 		con = constellations[_current_constellation]
@@ -72,7 +105,7 @@ func _physics_process(delta: float) -> void:
 	
 	if _current_constellation == constellations.size():
 		if _shuffled_constellation == null or _shuffled_constellation.finished():
-			_shuffled_constellation = _shuffled_constellation[randi() % _shuffled_constellation.size()]
+			_shuffled_constellation = endgame_constellations[randi() % endgame_constellations.size()]
 			_shuffled_constellation.reset()
 
 func reset() -> void:

@@ -49,59 +49,87 @@ script = ExtResource( 4 )
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 4 )
 
-[node name="UI" type="CanvasLayer" parent="."]
-
-[node name="HUD" type="MarginContainer" parent="UI"]
+[node name="UI" type="Control" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+rect_min_size = Vector2( 1280, 720 )
 mouse_filter = 2
 theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="HUD" type="MarginContainer" parent="UI"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Top" type="HBoxContainer" parent="UI/HUD"]
 margin_right = 1280.0
-margin_bottom = 49.0
+margin_bottom = 70.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
-[node name="Boosts" type="Label" parent="UI/HUD/Top"]
-margin_top = 8.0
-margin_right = 416.0
-margin_bottom = 41.0
+[node name="Bar" type="VBoxContainer" parent="UI/HUD/Top"]
+margin_right = 424.0
+margin_bottom = 70.0
+size_flags_horizontal = 3
+
+[node name="Boosts" type="Label" parent="UI/HUD/Top/Bar"]
+margin_right = 424.0
+margin_bottom = 33.0
 size_flags_horizontal = 3
 text = "|||||"
-align = 2
 
-[node name="Time" type="Label" parent="UI/HUD/Top"]
-margin_left = 420.0
-margin_right = 836.0
-margin_bottom = 49.0
+[node name="Warp" type="Label" parent="UI/HUD/Top/Bar"]
+margin_top = 37.0
+margin_right = 424.0
+margin_bottom = 70.0
+size_flags_horizontal = 3
+custom_colors/font_color = Color( 1.5, 0, 0, 1 )
+text = "==="
+
+[node name="Score" type="HBoxContainer" parent="UI/HUD/Top"]
+margin_left = 428.0
+margin_right = 852.0
+margin_bottom = 70.0
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="UI/HUD/Top/Score"]
+margin_top = 10.0
+margin_right = 210.0
+margin_bottom = 59.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 5 )
 text = "0"
-align = 1
+align = 2
 
-[node name="Score" type="Label" parent="UI/HUD/Top"]
-margin_left = 840.0
-margin_top = 8.0
-margin_right = 860.0
-margin_bottom = 41.0
-text = "0"
-
-[node name="Collected" type="Label" parent="UI/HUD/Top"]
-margin_left = 864.0
-margin_top = 8.0
-margin_right = 1280.0
-margin_bottom = 41.0
+[node name="Collected" type="Label" parent="UI/HUD/Top/Score"]
+margin_left = 214.0
+margin_top = 18.0
+margin_right = 424.0
+margin_bottom = 51.0
 size_flags_horizontal = 3
+
+[node name="Time" type="Label" parent="UI/HUD/Top"]
+margin_left = 856.0
+margin_top = 18.0
+margin_right = 1280.0
+margin_bottom = 51.0
+size_flags_horizontal = 3
+text = "0"
+align = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="GameOver" type="MarginContainer" parent="UI"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-theme = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

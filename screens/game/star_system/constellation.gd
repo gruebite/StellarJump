@@ -29,7 +29,6 @@ var _physics_shape: Physics2DShapeQueryParameters
 var _shape: CircleShape2D
 
 var _spawn_func: FuncRef
-var _check_func: FuncRef
 
 func _init(_star_system: Node2D) -> void:
 	star_system = _star_system
@@ -45,7 +44,6 @@ func _init(_star_system: Node2D) -> void:
 	_physics_shape.collide_with_areas = true
 	
 	_spawn_func = funcref(self, "_spawn_random")
-	_check_func = funcref(self, "_check_proximity")
 
 func with_lifetime(_lifetime: float) -> Constellation:
 	lifetime = _lifetime
@@ -71,10 +69,6 @@ func with_check_space(_check_space: bool) -> Constellation:
 func with_spawn_func(spawn_func: FuncRef) -> Constellation:
 	_spawn_func = spawn_func
 	return self
-
-func with_check_func(check_func: FuncRef) -> Constellation:
-	_check_func = check_func
-	return self
 	
 func pick_star_scene() -> PackedScene:
 	var pick := randi() % _star_weight_total
@@ -93,7 +87,7 @@ func poll_stars(delta: float, array: Array) -> void:
 	while star_system.get_child_count() + array.size() < min_stars and tries > 0:
 		var star := pick_star_scene().instance()
 		var pos: Vector2 = _spawn_func.call_func(self, int(star.target_radius))
-		if check_space and _check_func.call_func(self, pos, star.target_radius):
+		if check_space and _check_proximity(self, pos, star.target_radius):
 			star.position = pos
 			print("ADDED ", pos)
 			array.push_back(star)
@@ -110,7 +104,7 @@ func poll_stars(delta: float, array: Array) -> void:
 		while tries > 0:
 			var star := pick_star_scene().instance()
 			var pos: Vector2 = _spawn_func.call_func(self, int(star.target_radius))
-			if check_space and _check_func.call_func(self, pos, star.target_radius):
+			if check_space and _check_proximity(self, pos, star.target_radius):
 				star.position = pos
 				array.push_back(star)
 				break

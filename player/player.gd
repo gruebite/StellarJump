@@ -56,6 +56,8 @@ func _physics_process(delta: float) -> void:
 			direction = direction.rotated(rads)
 			position = orbiting.position + direction * (orbiting.radius + radius)
 			rotation = direction.angle()
+		else:
+			orbiting = null
 	else:
 		position += direction * delta * speed * get_warp_speed()
 		rotation += delta * rotation_speed * get_warp_speed() * (1 if clockwise else -1)

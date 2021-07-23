@@ -4,8 +4,12 @@ signal star_formed(star)
 signal star_died(star)
 signal star_collapsed(star)
 
-var constellations := [
-	Constellation.new(self) \
+var constellations := {
+}
+
+var decks := [
+	ConstellationDeck.new([
+		Constellation.new(self) \
 		.with_lifetime(0.0) \
 		.with_spawn_rate(0.0) \
 		.with_min_stars(1) \
@@ -21,88 +25,80 @@ var constellations := [
 			"Pulsar": 0,
 			"Black Hole": 0,
 		}),
-	Constellation.new(self) \
-		.with_lifetime(30.0) \
-		.with_spawn_rate(3.0) \
-		.with_min_stars(3) \
-		.with_star_weights({
-			"Brown Dwarf": 1,
-			"Low Mass": 1,
-			"High Mass": 1,
-		}),
-	Constellation.new(self) \
-		.with_lifetime(5.0) \
-		.with_spawn_rate(1.0) \
-		.with_min_stars(2) \
-		.with_star_weights({
-			"Giant": 2,
-			"Super Giant": 1,
-		}),
+		Constellation.new(self) \
+			.with_lifetime(30.0) \
+			.with_spawn_rate(3.0) \
+			.with_min_stars(3) \
+			.with_star_weights({
+				"Brown Dwarf": 1,
+				"Low Mass": 1,
+				"High Mass": 1,
+			}),
+		Constellation.new(self) \
+			.with_lifetime(5.0) \
+			.with_spawn_rate(1.0) \
+			.with_min_stars(2) \
+			.with_star_weights({
+				"Giant": 2,
+				"Super Giant": 1,
+			}),
+	]),
+	ConstellationDeck.new([
+		Constellation.new(self) \
+			.with_lifetime(30.0) \
+			.with_spawn_rate(3.0) \
+			.with_min_stars(3) \
+			.with_star_weights({
+				"Brown Dwarf": 1,
+				"Low Mass": 3,
+				"High Mass": 2,
+			}),
+		Constellation.new(self) \
+			.with_lifetime(5.0) \
+			.with_spawn_rate(1.0) \
+			.with_min_stars(2) \
+			.with_star_weights({
+				"Giant": 2,
+				"Super Giant": 1,
+			}),
+		Constellation.new(self) \
+			.with_lifetime(3.0) \
+			.with_spawn_rate(3.0) \
+			.with_min_stars(1) \
+			.with_star_weights({
+				"White Dwarf": 5,
+				"Neutron": 3,
+				"Black Hole": 1,
+			}),
+		Constellation.new(self) \
+			.with_lifetime(0.5) \
+			.with_spawn_rate(0.5) \
+			.with_min_stars(0) \
+			.with_star_weights({
+				"Pulsar": 1,
+			}),
+	])
 ]
 
-var endgame_constellations := [
-	Constellation.new(self) \
-		.with_lifetime(30.0) \
-		.with_spawn_rate(3.0) \
-		.with_min_stars(3) \
-		.with_star_weights({
-			"Brown Dwarf": 1,
-			"Low Mass": 3,
-			"High Mass": 2,
-		}),
-	Constellation.new(self) \
-		.with_lifetime(5.0) \
-		.with_spawn_rate(1.0) \
-		.with_min_stars(2) \
-		.with_star_weights({
-			"Giant": 2,
-			"Super Giant": 1,
-		}),
-	Constellation.new(self) \
-		.with_lifetime(1.0) \
-		.with_spawn_rate(1.0) \
-		.with_min_stars(1) \
-		.with_star_weights({
-			"White Dwarf": 5,
-			"Neutron": 3,
-			"Black Hole": 1,
-		}),
-	Constellation.new(self) \
-		.with_lifetime(0.6) \
-		.with_spawn_rate(0.2) \
-		.with_min_stars(3) \
-		.with_star_weights({
-			"Pulsar": 1,
-		}),
+var deck_weights := [
+	
 ]
 
-var _current_constellation := 0
-var _shuffled_constellation: Constellation
+var _current_deck := 0
 var _polled_stars := []
 
 func _ready() -> void:
 	pass
 
 func _process(delta: float) -> void:
-	var con: Constellation
-	if _current_constellation < constellations.size():
-		con = constellations[_current_constellation]
-	else:
-		con = _shuffled_constellation
-
-	con.poll_stars(delta * max(1.0, pow(owner.get_game_seconds() / 60.0, 0.5)), _polled_stars)
+	decks[_current_deck].poll_stars(delta * max(1.0, pow(owner.get_game_seconds() / 60.0, 0.5)), _polled_stars)
 	while _polled_stars.size() > 0:
 		var star: Star = _polled_stars.pop_back()
 		add_star(star)
 
-	if _current_constellation < constellations.size():
-		if constellations[_current_constellation].finished():
-			_current_constellation += 1
-	
-	if _current_constellation == constellations.size():
-		if _shuffled_constellation == null or _shuffled_constellation.finished():
-			_shuffled_constellation = endgame_constellations[randi() % endgame_constellations.size()]
-			_shuffled_constellation.reset()
+	if decks[_current_deck].finished():
+		decks[_current_deck].reset()
+		_current_deck = randi() % decks.size()
 
 func add_star(star: Star) -> void:
 	var _ignore: int
@@ -120,10 +116,10 @@ func reset() -> void:
 	for child in get_children():
 		child.queue_free()
 	
-	for c in constellations:
-		c.reset()
+	for d in decks:
+		d.reset()
 	
-	_current_constellation = 0
+	_current_deck = 0
 
 func _on_star_formed(star: Star) -> void:
 	emit_signal("star_formed", star)

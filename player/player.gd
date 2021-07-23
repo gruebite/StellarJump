@@ -5,17 +5,17 @@ signal used_boost()
 signal gained_boost()
 signal consumed_star(star)
 
-const radius := 5
+const radius := 10
 const speed := 120.0
 const rotation_speed := PI
 
 const warp_speeds := [
 	1.0,
-	1.5, # 3
-	1.9, # 5
-	2.2, # 8
-	2.4, # 13
-	2.5, # 21
+	1.5,
+	1.9,
+	2.2,
+	2.4,
+	2.5,
 ]
 
 const max_unstable_level := 70.0
@@ -39,18 +39,16 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if orbiting:
 		if is_instance_valid(orbiting):
-			if orbiting.state == Star.State.COLLAPSING:
-				explode()
-			var rads: float = TAU * orbiting.orbital_rate * delta * pow(1.01, unstable_level) * (1 if clockwise else -1)
+			var rads: float = TAU * orbiting.orbital_rate * delta * get_warp_speed() * (1 if clockwise else -1)
 			_orbit_traveled += abs(rads)
 			if _orbit_traveled >= TAU:
 				orbiting.orbited = true
 			direction = direction.rotated(rads)
-			position = orbiting.position + direction * (orbiting.radius + radius*2)
+			position = orbiting.position + direction * (orbiting.radius + radius)
 			rotation = direction.angle()
 	else:
-		position += direction * delta * speed * warp_speeds[warp_level]
-		rotation += delta * rotation_speed * warp_speeds[warp_level] * (1 if clockwise else -1)
+		position += direction * delta * speed * get_warp_speed()
+		rotation += delta * rotation_speed * get_warp_speed() * (1 if clockwise else -1)
 	update()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -68,6 +66,8 @@ func _draw() -> void:
 
 func _on_area_entered(area: Area2D) -> void:
 	var star: Star = area.get_parent()
+	if star.deadly:
+		explode()
 	if star.instantly_consumable:
 		if !star.consumed:
 			star.consume()
@@ -76,15 +76,22 @@ func _on_area_entered(area: Area2D) -> void:
 		return
 	var new_direction := (position - star.position).normalized()
 	# Only set direction if we are not already in orbit.
-	if orbiting:
-		orbiting.kill()
+	if orbiting and is_instance_valid(orbiting):
+		if orbiting.orbited:
+			dec_warp()
+		else:
+			inc_chain()
+		orbiting.consume()
 	else:
 		clockwise = direction.dot(new_direction.rotated(PI / 2)) >= 0
 	orbiting = star
-	orbiting.siphon()
 	direction = new_direction
 	_orbit_traveled = 0.0
 
+func _on_explosion_timeout():
+	print("DIED")
+	emit_signal("died")
+	
 func _on_screen_exited():
 	print("DIED")
 	emit_signal("died")
@@ -92,6 +99,21 @@ func _on_screen_exited():
 func explode() -> void:
 	$Sprite.hide()
 	$ExplosionParticles.emitting = true
+	$ExplosionTimer.start()
+
+func inc_chain() -> void:
+	chained += 1
+	warp_level = int(clamp(int((chained - 2) / 5.0), 0, warp_speeds.size() - 1))
+
+func dec_warp() -> void:
+	warp_level = int(max(0, warp_level - 1))
+	chained = 0 if warp_level == 0 else warp_level * 5 + 2
+
+func get_warp_speed() -> float:
+	return warp_speeds[warp_level]
+
+func get_unstable_speed() -> float:
+	return pow(1.01, unstable_level)
 
 func action() -> void:
 	if orbiting:
@@ -100,8 +122,7 @@ func action() -> void:
 			orbiting = null
 			star.consume()
 			if !star.orbited:
-				chained += 1
-				warp_level = int(clamp(int((chained - 2) / 5), 0, warp_speeds.size() - 1))
+				inc_chain()
 			else:
 				chained = 0
 				warp_level = 0
@@ -110,8 +131,6 @@ func action() -> void:
 	elif boosts > 0:
 		direction = Vector2.RIGHT.rotated(rotation)
 		boosts -= 1
-		warp_level = int(max(0, warp_level - 1))
-		chained = 0 if warp_level == 0 else warp_level * 5 + 2
 		emit_signal("used_boost")
 		$BoostParticles.emitting = true
 

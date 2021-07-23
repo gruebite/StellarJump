@@ -18,6 +18,7 @@ signal formed()
 signal died()
 signal collapsed()
 
+export var deadly := false
 export var instantly_consumable := false
 export var formtime := 1.0
 export var lifetime := 20.0
@@ -81,25 +82,11 @@ func _on_explosion_timeout():
 	
 func set_radius(value: float) -> void:
 	radius = value
-	$Area/Shape.shape.radius = radius
+	# Buffer for the ring's width.
+	$Area/Shape.shape.radius = radius + 3
 
 func get_radius() -> float:
 	return radius
-	
-#func get_points() -> int:
-#	return int(points_factor / (lifetime * points_lifetime_factor + radius * points_radius_factor))
-
-#func get_oribtal_rate() -> float:
-#	return orbital_rate_factor / (lifetime * orbital_rate_lifetime_factor + radius * orbital_rate_radius_factor)
-
-func siphon() -> void:
-	pass
-	# Percentage of lifetime passed.
-	#var p := clamp((age - formtime) / lifetime, 0.0, 0.999999999)
-	#var speed_mult: float = get_tree().get_nodes_in_group("Player")[0].speed_mult
-	#var desired_remaining := min(lifetime - (age - formtime), 1.0 / orbital_rate * orbit_limit * speed_mult)
-	#lifetime = (1 / (1-p)) * desired_remaining
-	#age = formtime + p * lifetime
 
 func kill() -> void:
 	age = max(age, formtime + lifetime)

@@ -24,7 +24,7 @@ func _ready() -> void:
 	reset()
 
 func _process(delta: float) -> void:
-	var sec := int(OS.get_ticks_msec() / 1000.0) - _start_time
+	var sec := get_game_seconds()
 	$UI/HUD/Top/Time.text = "%02d:%02d" % [sec / 60, sec % 60]
 	
 	
@@ -50,11 +50,11 @@ func _on_player_died() -> void:
 	$UI/GameOver.show()
 
 func _on_player_used_boost() -> void:
-	$UI/HUD/Top/Bar/Boosts.text = "|".repeat($Player.boosts)
-	$UI/HUD/Top/Bar/Warp.text = "=".repeat($Player.warp_level)
+	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
+	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
 	
 func _on_player_gained_boost() -> void:
-	$UI/HUD/Top/Bar/Boosts.text = "|".repeat($Player.boosts)
+	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
 
 func _on_player_consumed_star(star: Star) -> void:
 	_fake_score = score
@@ -62,15 +62,14 @@ func _on_player_consumed_star(star: Star) -> void:
 	score += p
 	_collected_score = p
 	_wait_score = 0.5
-	$UI/HUD/Top/Bar/Warp.text = "=".repeat($Player.warp_level)
+	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
 
 func _on_star_collapsed(star: Star) -> void:
-	if $Player.orbiting == star:
-		_on_player_died()
-	else:
-		if !star.consumed:
-			$Player.unstable_level += 1
-			print("UNSTABLE ", $Player.unstable_level)
+	if !star.consumed:
+		$Stars.form_star("Black Hole", star.position)
+
+func get_game_seconds() -> int:
+	return int(OS.get_ticks_msec() / 1000.0) - _start_time
 
 func reset() -> void:
 	score = 0
@@ -79,8 +78,8 @@ func reset() -> void:
 	$Player.reset()
 	$Stars.reset()
 	
-	$UI/HUD/Top/Bar/Boosts.text = "|".repeat($Player.boosts)
-	$UI/HUD/Top/Bar/Warp.text = "=".repeat($Player.warp_level)
+	$UI/HUD/Top/Bar/Boosts.text = "ж".repeat($Player.boosts)
+	$UI/HUD/Top/Bar/Warp.text = "Ξ".repeat($Player.warp_level)
 	$UI/HUD/Top/Score/Label.text = str(score)
 	
 	$UI/GameOver.hide()

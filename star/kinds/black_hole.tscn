@@ -6,11 +6,12 @@
 resource_local_to_scene = true
 
 [node name="BlackHole" instance=ExtResource( 1 )]
-lifetime = 300.0
+deadly = true
+lifetime = 120.0
 target_radius = 15.0
 orbital_rate = 1.0
 points = 0
-ring_color = Color( 0.12549, 0.12549, 0.12549, 1 )
+ring_color = Color( 1.5, 1.5, 1.5, 1 )
 core_color = Color( 0, 0, 0, 1 )
 
 [node name="Shape" parent="Area" index="0"]

@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://screens/game/game.gd" type="Script" id=1]
 [ext_resource path="res://player/player.tscn" type="PackedScene" id=2]
 [ext_resource path="res://ui/theme.tres" type="Theme" id=3]
 [ext_resource path="res://screens/game/star_system/star_system.gd" type="Script" id=4]
 [ext_resource path="res://fonts/exo_medium_xlarge.tres" type="DynamicFont" id=5]
+[ext_resource path="res://fonts/noto_medium_large.tres" type="DynamicFont" id=6]
 
 [sub_resource type="Shader" id=1]
 code = "shader_type canvas_item;
@@ -69,39 +70,44 @@ __meta__ = {
 
 [node name="Top" type="HBoxContainer" parent="UI/HUD"]
 margin_right = 1280.0
-margin_bottom = 70.0
+margin_bottom = 64.0
 size_flags_horizontal = 3
 size_flags_vertical = 0
 
 [node name="Bar" type="VBoxContainer" parent="UI/HUD/Top"]
 margin_right = 424.0
-margin_bottom = 70.0
+margin_bottom = 64.0
 size_flags_horizontal = 3
 
 [node name="Boosts" type="Label" parent="UI/HUD/Top/Bar"]
 margin_right = 424.0
-margin_bottom = 33.0
+margin_bottom = 30.0
 size_flags_horizontal = 3
+size_flags_vertical = 0
+custom_fonts/font = ExtResource( 6 )
 text = "|||||"
 
 [node name="Warp" type="Label" parent="UI/HUD/Top/Bar"]
-margin_top = 37.0
+margin_top = 34.0
 margin_right = 424.0
-margin_bottom = 70.0
+margin_bottom = 64.0
 size_flags_horizontal = 3
+size_flags_vertical = 8
+custom_fonts/font = ExtResource( 6 )
 custom_colors/font_color = Color( 1.5, 0, 0, 1 )
 text = "==="
+valign = 1
 
 [node name="Score" type="HBoxContainer" parent="UI/HUD/Top"]
 margin_left = 428.0
 margin_right = 852.0
-margin_bottom = 70.0
+margin_bottom = 49.0
 size_flags_horizontal = 3
+size_flags_vertical = 0
 
 [node name="Label" type="Label" parent="UI/HUD/Top/Score"]
-margin_top = 10.0
 margin_right = 210.0
-margin_bottom = 59.0
+margin_bottom = 49.0
 size_flags_horizontal = 3
 custom_fonts/font = ExtResource( 5 )
 text = "0"
@@ -109,19 +115,20 @@ align = 2
 
 [node name="Collected" type="Label" parent="UI/HUD/Top/Score"]
 margin_left = 214.0
-margin_top = 18.0
+margin_top = 8.0
 margin_right = 424.0
-margin_bottom = 51.0
+margin_bottom = 41.0
 size_flags_horizontal = 3
 
 [node name="Time" type="Label" parent="UI/HUD/Top"]
 margin_left = 856.0
-margin_top = 18.0
 margin_right = 1280.0
-margin_bottom = 51.0
+margin_bottom = 33.0
 size_flags_horizontal = 3
+size_flags_vertical = 0
 text = "0"
 align = 2
+valign = 1
 __meta__ = {
 "_edit_use_anchors_": false
 }

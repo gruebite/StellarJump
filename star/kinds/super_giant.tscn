@@ -8,7 +8,6 @@ resource_local_to_scene = true
 [node name="SuperGiant" instance=ExtResource( 1 )]
 lifetime = 15.0
 target_radius = 90.0
-orbital_rate = 0.3
 points = 30
 ring_color = Color( 1.8, 0, 0, 1 )
 core_color = Color( 1, 0.25098, 0, 1 )

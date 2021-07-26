@@ -7,10 +7,9 @@
 resource_local_to_scene = true
 
 [node name="Pulsar" instance=ExtResource( 1 )]
-instantly_consumable = true
 target_radius = 10.0
-points = 0
-boosts = 2
+orbital_mult = 0.5
+points = 50
 ring_color = Color( 1.5, 1.5, 1.5, 1 )
 
 [node name="Shape" parent="Area" index="0"]

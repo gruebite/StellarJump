@@ -8,7 +8,6 @@ resource_local_to_scene = true
 [node name="BrownDwarf" instance=ExtResource( 1 )]
 lifetime = 30.0
 target_radius = 30.0
-orbit_limit = 2.0
 points = 8
 ring_color = Color( 0.407843, 0.333333, 0.219608, 1 )
 core_color = Color( 0.286275, 0.235294, 0.196078, 1 )

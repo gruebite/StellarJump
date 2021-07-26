@@ -46,38 +46,44 @@ var decks := [
 	ConstellationDeck.new([
 		Constellation.new(self) \
 			.with_lifetime(30.0) \
-			.with_spawn_rate(0.0) \
+			.with_spawn_rate(3.0) \
 			.with_min_stars(4) \
 			.with_star_weights({
 				"Brown Dwarf": 1,
 				"Low Mass": 6,
 				"High Mass": 3,
 			}),
+	]),
+	ConstellationDeck.new([
 		Constellation.new(self) \
-			.with_lifetime(5.0) \
+			.with_lifetime(6.0) \
 			.with_spawn_rate(1.0) \
 			.with_min_stars(2) \
 			.with_star_weights({
 				"Giant": 2,
 				"Super Giant": 1,
 			}),
+	]),
+	ConstellationDeck.new([
 		Constellation.new(self) \
 			.with_lifetime(3.0) \
-			.with_spawn_rate(3.0) \
+			.with_spawn_rate(2.0) \
 			.with_min_stars(1) \
 			.with_star_weights({
 				"White Dwarf": 5,
 				"Neutron": 3,
 				"Black Hole": 1,
 			}),
+	]),
+	ConstellationDeck.new([
 		Constellation.new(self) \
 			.with_lifetime(0.5) \
-			.with_spawn_rate(0.5) \
+			.with_spawn_rate(0.3) \
 			.with_min_stars(0) \
 			.with_star_weights({
 				"Pulsar": 1,
 			}),
-	])
+	]),
 ]
 
 var deck_weights := [

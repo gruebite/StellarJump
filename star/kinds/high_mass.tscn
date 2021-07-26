@@ -7,7 +7,6 @@ resource_local_to_scene = true
 
 [node name="HighMass" instance=ExtResource( 1 )]
 lifetime = 18.0
-orbital_rate = 0.4
 points = 15
 ring_color = Color( 1.5, 1.5, 1.5, 1 )
 core_color = Color( 0, 1, 1, 1 )

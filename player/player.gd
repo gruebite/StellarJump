@@ -1,44 +1,30 @@
 class_name Player extends Node2D
 
 signal died()
-signal used_boost()
-signal gained_boost()
+
+signal energy_changed(by)
+signal entered_orbit(star)
 signal consumed_star(star)
-signal chained_changed()
-signal gained_points(amount)
+signal orbited(star)
+signal gained_points(by)
 
 const radius := 10
 const speed := 120.0
 const rotation_speed := PI
 
-const warp_speeds := [
-	1.0,
-	1.2,
-	1.4,
-	1.6,
-	1.8,
-	2.0,
-	2.1,
-	2.2,
-	2.3,
-	2.4,
-	2.5,
-]
+const energy_max := 30
+const energy_start := 10
+const boost_cost := 3
 
-const chained_per_warp := 3
-const max_boosts := 10
-const boost_points := 100
-
-var chained := 0
+var energy := energy_start
 
 var direction := Vector2(1, 1).normalized()
 
 var orbiting: Star = null
 var clockwise := true
 
-var boosts := max_boosts / 2
-
 var _orbit_traveled := 0.0
+var _orbit_count := 0
 
 func _ready() -> void:
 	$Area/Shape.shape.radius = radius
@@ -46,21 +32,23 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	if orbiting:
 		if is_instance_valid(orbiting):
-			var orb := 1 + (get_warp_speed() - 1) * 0.25
-			var rads: float = TAU * orbiting.orbital_rate * delta * orb * (1 if clockwise else -1)
+			var orb := 1 + (get_energy_speed() - 1) * 0.25
+			var rads: float = TAU * orbiting.get_orbital_rate(speed) * delta * orb * (1 if clockwise else -1)
 			_orbit_traveled += abs(rads)
 			if _orbit_traveled >= TAU:
+				_orbit_count += 1
 				_orbit_traveled = 0.0
-				orbiting.orbit()
-				dec_warp()
+				$OrbitParticles.emitting = true
+				emit_signal("orbited", orbiting)
+				dec_energy()
 			direction = direction.rotated(rads)
 			position = orbiting.position + direction * (orbiting.radius + radius)
 			rotation = direction.angle()
 		else:
 			orbiting = null
 	else:
-		position += direction * delta * speed * get_warp_speed()
-		rotation += delta * rotation_speed * get_warp_speed() * (1 if clockwise else -1)
+		position += direction * delta * speed * get_energy_speed()
+		rotation += delta * rotation_speed * get_energy_speed() * (1 if clockwise else -1)
 	update()
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -80,89 +68,66 @@ func _on_area_entered(area: Area2D) -> void:
 	var star: Star = area.get_parent()
 	if star.deadly:
 		explode()
-	if star.instantly_consumable:
-		if !star.consumed:
-			star.consume()
-			var needs := max_boosts - boosts
-			var takes := int(min(star.boosts, needs))
-			boosts += takes
-			var remains := star.boosts - takes
-			if remains > 0:
-				emit_signal("gained_points", remains * boost_points)
-			emit_signal("gained_boost")
-		return
 	var new_direction := (position - star.position).normalized()
 	# Only set direction if we are not already in orbit.
 	if orbiting and is_instance_valid(orbiting):
-		inc_chain()
+		emit_signal("gained_points", int(orbiting.points * get_energy_speed()))
 		orbiting.consume()
-		$ConsumeParticles.emitting = true
+		emit_signal("consumed_star", orbiting)
 	else:
 		clockwise = direction.dot(new_direction.rotated(PI / 2)) >= 0
 	direction = new_direction
 	orbiting = star
 	_orbit_traveled = 0.0
+	_orbit_count = 0
+	emit_signal("entered_orbit", orbiting)
+	inc_energy()
 
 func _on_explosion_timeout():
 	print("DIED")
 	emit_signal("died")
-	
+
 func _on_screen_exited():
 	print("DIED")
 	emit_signal("died")
 
 func explode() -> void:
-	$Sprite.hide()
-	$ExplosionParticles.emitting = true
-	$ExplosionTimer.start()
+	if $ExplosionTimer.is_stopped():
+		$Sprite.hide()
+		$ExplosionParticles.emitting = true
+		$ExplosionTimer.start()
 
-func get_chain_overflow() -> int:
-	return chained % chained_per_warp
-	
-func get_warp_level() -> int:
-	return int(clamp(int(chained / chained_per_warp), 0, warp_speeds.size() - 1))
+func get_energy_speed() -> float:
+	return max(1.0, energy / 10.0)
 
-func get_warp_speed() -> float:
-	return warp_speeds[get_warp_level()]
+func inc_energy(by: int = 1) -> void:
+	var new := int(min(energy_max, energy + by))
+	energy = new
+	emit_signal("energy_changed", int(abs(energy - new)))
 
-func inc_chain() -> void:
-	chained += 1
-	emit_signal("chained_changed")
-
-func dec_chain() -> void:
-	chained = int(max(0, chained - 1))
-	emit_signal("chained_changed")
-
-func inc_warp() -> void:
-	var warp_level := int(min(warp_speeds.size() - 1, get_warp_level() + 1))
-	chained = warp_level * chained_per_warp
-	emit_signal("chained_changed")
-
-func dec_warp() -> void:
-	var warp_level := int(max(0, get_warp_level() - 1))
-	chained = 0 if warp_level == 0 else warp_level * chained_per_warp
-	emit_signal("chained_changed")
+func dec_energy(by: int = 1) -> void:
+	var new := int(max(0, energy - by))
+	energy = new
+	emit_signal("energy_changed", int(abs(energy - new)))
+	if energy == 0:
+		explode()
 
 func action() -> void:
 	if orbiting:
-		if orbiting.state != Star.State.COLLAPSING:
+		if orbiting.state != Star.State.COLLAPSING and orbiting.state != Star.State.EXPLODING:
+			emit_signal("gained_points", int(orbiting.points * get_energy_speed()))
 			var star := orbiting
 			orbiting = null
 			star.consume()
-			if !star.orbited:
-				$ConsumeParticles.emitting = true
-				inc_chain()
 			emit_signal("consumed_star", star)
-	elif boosts > 0:
+	elif energy > boost_cost:
 		direction = Vector2.RIGHT.rotated(rotation)
-		boosts -= 1
-		emit_signal("used_boost")
 		$BoostParticles.emitting = true
+		dec_energy(boost_cost)
 
 func reset() -> void:
 	$Sprite.show()
 	orbiting = null
-	boosts = max_boosts / 2
-	chained = 0
+	energy = energy_start
 	position = Vector2()
 	direction = Vector2(1, 1).normalized()

@@ -6,7 +6,6 @@
 resource_local_to_scene = true
 
 [node name="LowMass" instance=ExtResource( 1 )]
-orbit_limit = 2.0
 ring_color = Color( 1.5, 1.5, 0, 1 )
 core_color = Color( 1, 0.796078, 0, 1 )
 

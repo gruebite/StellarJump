@@ -10,30 +10,22 @@ enum State {
 const orbital_rate_factor := 1.0
 const orbital_rate_lifetime_factor := 0.1
 const orbital_rate_radius_factor := 0.1
-const points_factor := 1.0
-const points_lifetime_factor := 0.01
-const points_radius_factor := 0.1
 
 signal formed()
 signal died()
 signal collapsed()
 
 export var deadly := false
-export var instantly_consumable := false
 export var formtime := 1.0
 export var lifetime := 20.0
 export var target_radius := 50.0
-export var orbital_rate := 0.5
-export var orbit_limit := 1.0
+export var orbital_mult := 1.0
 export var points := 10
-export var boosts := 0
 
 export var ring_color := Color.white
 export var core_color := Color.white
 
 var consumed := false
-var orbited := false
-var landed := Vector2.ZERO
 
 var state: int = State.FORMING
 
@@ -88,12 +80,11 @@ func set_radius(value: float) -> void:
 
 func get_radius() -> float:
 	return radius
-	
-func orbit() -> void:
-	orbited = true
+
+func get_orbital_rate(speed: float) -> float:
+	return orbital_mult * (speed / (PI * 2 * max(1.0, get_radius())))
 
 func kill() -> void:
-	landed = Vector2.ZERO
 	age = max(age, formtime + lifetime)
 	state = State.COLLAPSING
 	emit_signal("died")
